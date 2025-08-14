@@ -25,20 +25,22 @@ humanize() {
   echo "$b$d ${S[$s]}"
 }
 
-# Find all png files recursively if dir, or single file if file
+VIDEO_EXTS="mp4|mov|avi|mkv|flv|wmv|mpeg|mpg|m4v|3gp|ogg"
+
 if [ -d "$input" ]; then
   basedir="$(cd "$input" && pwd)"
-  files=$(find "$input" -type f -name "*.png")
-  outdir="$basedir/webp"
-elif [ -f "$input" ] && [[ "$input" == *.png ]]; then
+  files=$(find "$input" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.mkv" -o -iname "*.flv" -o -iname "*.wmv" -o -iname "*.mpeg" -o -iname "*.mpg" -o -iname "*.m4v" -o -iname "*.3gp" -o -iname "*.ogg" \) ! -iname "*.webm")
+  outdir="$basedir/webm"
+elif [ -f "$input" ] && [[ "$input" =~ \.(mp4|mov|avi|mkv|flv|wmv|mpeg|mpg|m4v|3gp|ogg)$ ]] && [[ "$input" != *.webm ]]; then
   basedir="$(cd "$(dirname "$input")" && pwd)"
   files="$input"
-  outdir="$basedir/webp"
+  outdir="$basedir/webm"
 else
-  echo "Provide a .png file or directory containing png files."
+  echo "Provide a video file (mp4, mov, avi, mkv, flv, wmv, mpeg, mpg, m4v, 3gp, ogg) or directory containing such files. WEBM files are not supported."
   exit 1
 fi
 
+echo "Starting video to WebM conversion..."
 mkdir -p "$outdir"
 
 printf "\n%-50s %-15s %-15s %-12s\n" "File" "Old Size" "New Size" "Diff"
@@ -49,14 +51,12 @@ total_new=0
 count=0
 
 for file in $files; do
-  # Path relative to basedir
   rel="${file#$basedir/}"
-
-  # Output file path under webp folder, maintaining structure
-  outpath="$outdir/${rel%.png}.webp"
+  ext="$(echo "${file##*.}" | tr '[:upper:]' '[:lower:]')"
+  outpath="$outdir/${rel%.*}.webm"
   mkdir -p "$(dirname "$outpath")"
 
-  cwebp -quiet "$file" -o "$outpath"
+  ffmpeg -hide_banner -loglevel error -i "$file" -c:v libvpx-vp9 -c:a libopus "$outpath"
 
   old_size=$(stat -f %z "$file")
   new_size=$(stat -f %z "$outpath")
@@ -70,6 +70,7 @@ for file in $files; do
     size_str="${RED}↑ $(humanize $(( -diff )))${NC}"
   fi
   printf "%-50s %-15s %-15s %-12b\n" "$rel" "$(humanize $old_size)" "$(humanize $new_size)" "$size_str"
+  echo "Converted: $rel -> ${rel%.*}.webm"
 done
 
 printf '%0.s-' {1..100}; echo
@@ -79,7 +80,8 @@ if [ "$saved" -ge 0 ]; then
 else
   saved_str="${RED}$(humanize $(( -saved )))${NC}"
 fi
-echo -e "${CYAN}Total images:${NC} $count"
+echo "Video to WebM conversion complete."
+echo -e "${CYAN}Total videos:${NC} $count"
 echo -e "${CYAN}Initial size:${NC} $(humanize $total_old)"
 echo -e "${CYAN}Converted size:${NC} $(humanize $total_new)"
 echo -e "${CYAN}Saved:${NC} $saved_str"
