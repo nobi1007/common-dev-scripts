@@ -41,6 +41,7 @@ fi
 
 mkdir -p "$outdir"
 
+echo "Starting image to WebP conversion..."
 printf "\n%-50s %-15s %-15s %-12s\n" "File" "Old Size" "New Size" "Diff"
 printf '%0.s-' {1..100}; echo
 
@@ -73,6 +74,7 @@ for file in $files; do
     size_str="${RED}↑ $(humanize $(( -diff )))${NC}"
   fi
   printf "%-50s %-15s %-15s %-12b\n" "$rel" "$(humanize $old_size)" "$(humanize $new_size)" "$size_str"
+  echo "Converted: $rel -> ${rel%.*}.webp"
 done
 
 printf '%0.s-' {1..100}; echo
@@ -82,6 +84,7 @@ if [ "$saved" -ge 0 ]; then
 else
   saved_str="${RED}$(humanize $(( -saved )))${NC}"
 fi
+echo "Image to WebP conversion complete."
 echo -e "${CYAN}Total images:${NC} $count"
 echo -e "${CYAN}Initial size:${NC} $(humanize $total_old)"
 echo -e "${CYAN}Converted size:${NC} $(humanize $total_new)"
