@@ -36,15 +36,16 @@ For detailed testing information, see [Testing Documentation](tests/README.md).
 
 All scripts are thoroughly tested with **65 comprehensive unit tests** covering:
 
-- **Script Validation**: File existence, permissions, usage messages
-- **Input Validation**: File formats, directory handling, error cases  
-- **Logic Testing**: Parameter parsing, output generation, edge cases
-- **Integration Testing**: Cross-script compatibility, documentation completeness
+-   **Script Validation**: File existence, permissions, usage messages
+-   **Input Validation**: File formats, directory handling, error cases
+-   **Logic Testing**: Parameter parsing, output generation, edge cases
+-   **Integration Testing**: Cross-script compatibility, documentation completeness
 
 ### Latest Test Results
+
 ```
 ==========================================
-           FINAL TEST REPORT             
+           FINAL TEST REPORT
 ==========================================
 
 Test Suites Summary:
@@ -67,7 +68,7 @@ The media conversion scripts are working correctly.
 
 ```
 ==========================================
-  Media Conversion Scripts - Test Suite  
+  Media Conversion Scripts - Test Suite
 ==========================================
 
 === Checking Dependencies ===
@@ -184,3 +185,13 @@ convert-to-webp/
 -   **Platform:** macOS (tested)
 -   **Shell:** Bash/Zsh compatible
 -   **Dependencies:** Homebrew packages (webp, ffmpeg)
+
+## Optimize Media [Idea]
+
+1. this whole process should be converted into two script which accepts path of the convertToWebp and convertToWebm scripts
+2. it should itreatively convert the assets into webp and webm rescptedively
+3. it should update the path of converted image into respective image path same as original
+4. replace and update all the references of all the assets for which webm or webp is created. also this seaching should inculde how you are currently searching by example: "Searched text for import.\*\.(jpg||jpeg|png|mp4)["']" something like this too
+5. after ensuring all the changes are done correctly
+6. move to next step of deleting the old assets, here we haave the track of all the assets so we should delete only the ones which got a. converted, b. updated reference in file and c. the file now has no error because of change
+7. this whole process should give an overall summary in advance before we start with step 2 and ask user if they wish to proceed, and also a summary after everything is completed. also there should be estimated time before and total time after completion. (edited)
